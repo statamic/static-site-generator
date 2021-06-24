@@ -30,6 +30,8 @@ class Generator
     protected $tasks;
     protected $config;
     protected $request;
+    protected $recent;
+    protected $since;
     protected $after;
     protected $count = 0;
     protected $skips = 0;
@@ -78,13 +80,14 @@ class Generator
         $this->extraUrls[] = $closure;
     }
 
-    public function generate()
+    public function generate($recent, $since)
     {
         $this->checkConcurrencySupport();
 
         Site::setCurrent(Site::default()->handle());
 
         $this
+            ->setRecent($recent, $since)
             ->bindGlide()
             ->backupViewPaths()
             ->clearDirectory()
@@ -105,6 +108,20 @@ class Generator
         if ($this->after) {
             call_user_func($this->after);
         }
+    }
+
+    public function setRecent($recent, $since)
+    {
+        $this->recent = $recent;
+
+        if ($recent) {
+            $diff = ($since === null) ? '24 hours' : $since;
+            Partyline::info("Generating collections updated in the last $diff");
+
+            $this->since = now()->sub($diff)->unix();
+        }
+
+        return $this;
     }
 
     public function bindGlide()
@@ -281,8 +298,8 @@ class Generator
             ->map(function ($content) {
                 return $this->createPage($content);
             })
-            ->filter
-            ->isGeneratable();
+            ->filter->isGeneratable()
+            ->filter->isRecent($this->recent, $this->since);
     }
 
     protected function terms()

@@ -21,7 +21,7 @@ class StaticSiteGenerate extends Command
      *
      * @var string
      */
-    protected $signature = 'statamic:ssg:generate {--workers=}';
+    protected $signature = 'statamic:ssg:generate {--workers=} {--recent} {--since=}';
 
     /**
      * The console command description.
@@ -51,12 +51,15 @@ class StaticSiteGenerate extends Command
     {
         Partyline::bind($this);
 
+        $recent = $this->option('recent');
+        $since = $this->option('since');
+
         if (! $workers = $this->option('workers')) {
             $this->comment('You may be able to speed up site generation significantly by installing spatie/fork and using multiple workers (requires PHP 8+).');
         }
 
         $this->generator
             ->workers($workers ?? 1)
-            ->generate();
+            ->generate($recent, $since);
     }
 }

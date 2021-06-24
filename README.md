@@ -38,6 +38,17 @@ php please ssg:generate
 
 Your site will be generated into a directory which you can deploy however you like. See [Deployment Examples](#deployment-examples) below for inspiration.
 
+### Generate recent content
+
+You may wish to sync only new content instead of generating the entire static site. You may use a `--recent` argument which generates collection content that's been updated in the last 24 hours. This only applies to new collection content and all Statamic pages will still be generated.
+
+```
+php please ssg:generate --recent
+php please ssg:generate --recent --since="1 month"
+```
+
+You may also use any additional time option `--since` if you want to use a custom time window.
+
 ### Multiple Workers
 
 For improved performance, you may spread the page generation across multiple workers. This requires Spatie's [Fork](https://github.com/spatie/fork) package. Then you may specify how many workers are to be used. You can use as many workers as you have CPU cores.
@@ -46,7 +57,6 @@ For improved performance, you may spread the page generation across multiple wor
 composer require spatie/fork
 php please ssg:generate --workers=4
 ```
-
 
 ## Routes
 
